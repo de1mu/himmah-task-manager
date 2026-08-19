@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Himmah | Productivity Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Modal: Authentication (Login / Sign Up) -->
+  <div class="modal-overlay hidden" id="auth-modal">
+    <div class="auth-card">
+      <div class="auth-banner">
+        <img src="https://cdni.iconscout.com/illustration/premium/thumb/user-login-4268415-3551762.png" 
+             alt="Login Illustration" 
+             class="auth-img" 
+             onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/user.svg';">
+        <h3>⚡ Himmah</h3>
+        <p data-i18n="auth_tagline">Boost your productivity with gamified tasks.</p>
+      </div>
+      
+      <div class="auth-form-side">
+        <button class="close-modal-btn" id="close-modal-btn" onclick="toggleAuthModal(false)">&times;</button>
+
+        <h2 id="auth-title" data-i18n="login_title">Welcome Back!</h2>
+        
+        <form id="auth-form" onsubmit="handleAuthSubmit(event)">
+          <div class="input-field hidden" id="name-field">
+            <i class="fa-regular fa-user"></i>
+            <input type="text" placeholder="Full Name" id="auth-name">
+          </div>
+
+          <div class="input-field">
+            <i class="fa-regular fa-envelope"></i>
+            <input type="email" placeholder="Email" id="auth-email" required>
+          </div>
+          
+          <div class="input-field">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" placeholder="Password" id="auth-pass" required>
+          </div>
+
+          <button type="submit" class="btn-primary" id="auth-submit-btn" data-i18n="login_btn">Sign In</button>
+        </form>
+        
+        <p class="auth-switch">
+          <span id="auth-switch-text" data-i18n="no_account">Don't have an account?</span> 
+          <a href="javascript:void(0)" id="auth-switch-link" onclick="toggleAuthMode()" data-i18n="signup_link">Sign Up</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Application Layout -->
+  <div class="app-layout" id="app-layout">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <i class="fa-solid fa-bolt logo-icon"></i>
+        <span>Himmah</span>
+      </div>
+
+      <nav class="nav-menu">
+        <a href="#" class="nav-item active" onclick="switchTab('dashboard', this)">
+          <i class="fa-solid fa-house"></i> <span data-i18n="menu_dash">Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" onclick="switchTab('braindump', this)">
+          <i class="fa-solid fa-brain"></i> <span data-i18n="menu_brain">Brain Dump</span>
+        </a>
+        <a href="#" class="nav-item" onclick="switchTab('quests', this)">
+          <i class="fa-solid fa-list-check"></i> <span data-i18n="menu_tasks">Quests</span>
+        </a>
+        <a href="#" class="nav-item" onclick="switchTab('analytics', this)">
+          <i class="fa-solid fa-chart-pie"></i> <span data-i18n="menu_stats">Analytics</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="icon-btn-full" id="auth-action-btn" onclick="handleAuthAction()">
+          <i class="fa-solid fa-right-to-bracket" id="auth-action-icon"></i> 
+          <span id="auth-action-text" data-i18n="login_btn">Sign In</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Top Navigation Bar -->
+      <header class="top-nav">
+<button class="menu-toggle-btn" id="menuToggleBtn" onclick="toggleSidebar()">
+  <i class="fa-solid fa-bars"></i>
+</button>
+        <div class="search-bar">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" placeholder="Search tasks, notes..." data-i18n-ph="search_ph">
+        </div>
+
+        <div class="nav-controls">
+          <div class="stat-pill streak-pill">🔥 <strong id="streak-val">0</strong> <span data-i18n="days">Days</span></div>
+          <div class="stat-pill points-pill">🏆 <strong id="points-val">0</strong> <span data-i18n="pts">XP</span></div>
+
+          <button id="lang-toggle" class="circle-btn" title="Language"><span id="lang-code">AR</span></button>
+          <button id="theme-toggle" class="circle-btn" title="Theme"><i class="fa-solid fa-moon" id="theme-icon"></i></button>
+          
+          <div class="user-profile-tag" onclick="toggleAuthModal(true)">
+            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=HimmaUser" 
+                 alt="Avatar" 
+                 id="user-avatar-img"
+                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Guest&background=6366f1&color=fff';">
+            <span id="nav-user-name">Guest</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Section 1: Dashboard -->
+      <section id="sec-dashboard" class="spa-section active-section">
+        <div class="welcome-banner">
+          <div class="banner-text">
+            <h1><span data-i18n="hi_text">Hi</span>, <span id="welcome-user-name">Guest</span>! 👋</h1>
+            <p data-i18n="welcome_sub">Ready to crush your daily goals and maintain your streak today?</p>
+          </div>
+
+          <div class="banner-illustration">
+            <img src="https://cdni.iconscout.com/illustration/premium/thumb/schedule-planner-4268388-3561009.png" 
+                 alt="Productivity Illustration"
+                 onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/todo.svg';">
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <!-- Quick Brain Dump Widget -->
+          <section class="grid-card brain-card">
+            <div class="card-header">
+              <h3>🧠 <span data-i18n="brain_dump_title">Brain Dump</span></h3>
+              <span class="badge-tag" data-i18n="quick_capture">Quick Capture</span>
+            </div>
+            
+            <input type="text" id="dash-brain-input" class="stylish-input" placeholder="What's on your mind right now?" data-i18n-ph="input_placeholder">
+            
+            <div class="category-actions">
+              <button class="cat-btn task-cat" onclick="handleProtectedAction(() => addDumpItem('task', 'dash-brain-input'))"><i class="fa-solid fa-circle-check"></i> <span data-i18n="btn_task">Task</span></button>
+              <button class="cat-btn idea-cat" onclick="handleProtectedAction(() => addDumpItem('idea', 'dash-brain-input'))"><i class="fa-solid fa-lightbulb"></i> <span data-i18n="btn_idea">Idea</span></button>
+              <button class="cat-btn date-cat" onclick="handleProtectedAction(() => addDumpItem('event', 'dash-brain-input'))"><i class="fa-solid fa-calendar"></i> <span data-i18n="btn_event">Event</span></button>
+            </div>
+          </section>
+
+          <!-- Progression Stats Widget -->
+          <section class="grid-card stats-overview">
+            <div class="card-header">
+              <h3 data-i18n="progression">Progression</h3>
+              <span class="level-badge"><span data-i18n="level">Lvl</span> <strong id="level-val">1</strong></span>
+            </div>
+
+            <div class="progress-container">
+              <div class="progress-info">
+                <span data-i18n="next_level">Next Level Progress</span>
+                <span><strong id="current-xp-span">0</strong>/100 XP</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="xp-bar-fill" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <div class="mini-widgets">
+              <div class="widget-box">
+                <i class="fa-solid fa-list-check icon-purple"></i>
+                <div>
+                  <h4 id="completed-count">0 / 0</h4>
+                  <p data-i18n="tasks_done">Completed</p>
+                </div>
+              </div>
+              <div class="widget-box">
+                <i class="fa-solid fa-chart-line icon-orange"></i>
+                <div>
+                  <h4 id="task-completion-rate">0%</h4>
+                  <p data-i18n="completion_rate">Success Rate</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Today's Tasks Widget -->
+          <section class="grid-card full-width-card">
+            <div class="card-header">
+              <h3>🎯 <span data-i18n="tasks_title">Today's Quests</span></h3>
+            </div>
+            <ul id="dash-task-list" class="styled-task-list"></ul>
+          </section>
+        </div>
+      </section>
+
+      <!-- Section 2: Brain Dump -->
+      <section id="sec-braindump" class="spa-section hidden-section">
+        <div class="page-header">
+          <h2>🧠 <span data-i18n="menu_brain">Brain Dump</span></h2>
+          <p class="text-muted" data-i18n="brain_desc">Clear your head. Dump ideas, thoughts, and tasks freely.</p>
+        </div>
+
+        <div class="grid-card margin-bottom-lg">
+          <input type="text" id="full-brain-input" class="stylish-input" placeholder="Type thoughts or ideas here..." data-i18n-ph="input_placeholder">
+          <div class="category-actions">
+            <button class="cat-btn task-cat" onclick="handleProtectedAction(() => addDumpItem('task', 'full-brain-input'))"><i class="fa-solid fa-circle-check"></i> <span data-i18n="btn_task">Task</span></button>
+            <button class="cat-btn idea-cat" onclick="handleProtectedAction(() => addDumpItem('idea', 'full-brain-input'))"><i class="fa-solid fa-lightbulb"></i> <span data-i18n="btn_idea">Idea</span></button>
+            <button class="cat-btn date-cat" onclick="handleProtectedAction(() => addDumpItem('event', 'full-brain-input'))"><i class="fa-solid fa-calendar"></i> <span data-i18n="btn_event">Event</span></button>
+          </div>
+        </div>
+
+        <div class="dump-board-grid">
+          <div class="dump-col">
+            <h3><i class="fa-solid fa-lightbulb text-orange"></i> <span data-i18n="ideas_heading">Ideas</span></h3>
+            <ul id="ideas-list" class="styled-task-list"></ul>
+          </div>
+          <div class="dump-col">
+            <h3><i class="fa-solid fa-calendar text-blue"></i> <span data-i18n="events_heading">Events</span></h3>
+            <ul id="events-list" class="styled-task-list"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Quests / Tasks -->
+      <section id="sec-quests" class="spa-section hidden-section">
+        <div class="page-header">
+          <h2>🎯 <span data-i18n="quests_heading">Quests & Tasks</span></h2>
+          <p class="text-muted" data-i18n="quests_desc">Track and complete your objectives to earn XP.</p>
+        </div>
+
+        <div class="grid-card">
+          <ul id="full-quest-list" class="styled-task-list"></ul>
+        </div>
+      </section>
+
+      <!-- Section 4: Analytics -->
+      <section id="sec-analytics" class="spa-section hidden-section">
+        <div class="page-header">
+          <h2>📊 <span data-i18n="analytics_heading">Analytics & Performance</span></h2>
+          <p class="text-muted" data-i18n="analytics_desc">Track your productivity growth and consistency over time.</p>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="grid-card">
+            <h3>📈 <span data-i18n="weekly_prod">Weekly Output</span></h3>
+            <div class="analytics-chart-placeholder">
+              <div class="chart-bar" style="height: 30%;" data-day="Mon"></div>
+              <div class="chart-bar" style="height: 50%;" data-day="Tue"></div>
+              <div class="chart-bar" style="height: 40%;" data-day="Wed"></div>
+              <div class="chart-bar" style="height: 80%;" data-day="Thu"></div>
+              <div class="chart-bar" style="height: 60%;" data-day="Fri"></div>
+              <div class="chart-bar active-bar" id="analytics-progress-bar" style="height: 10%;" data-day="Today"></div>
+            </div>
+          </div>
+
+          <div class="grid-card">
+            <h3>🏅 <span data-i18n="milestones">Milestones</span></h3>
+            <div class="badge-list">
+              <div class="badge-item unlocked">
+                <i class="fa-solid fa-fire icon-orange"></i>
+                <div>
+                  <h4>1 Day Streak</h4>
+                  <p class="text-muted">Unlocked!</p>
+                </div>
+              </div>
+              <div class="badge-item">
+                <i class="fa-solid fa-trophy icon-purple"></i>
+                <div>
+                  <h4>Level 5 Achiever</h4>
+                  <p class="text-muted">In Progress</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Modal: Edit Item -->
+  <div id="edit-modal" class="modal-overlay hidden">
+    <div class="auth-card" style="width: 420px; padding: 2rem;">
+      <div class="auth-form-side" style="padding: 0; width: 100%;">
+        <h3 style="margin-bottom: 1rem;">✏️ Edit Item</h3>
+        <input type="text" id="edit-item-input" class="stylish-input" placeholder="New title...">
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <button class="btn-primary" onclick="saveEditedItem()">Save</button>
+          <button class="icon-btn-full" style="color: var(--text-muted);" onclick="closeEditModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <!-- Application Script -->
+  <script src="script.js"></script>
+</body>
+</html>
