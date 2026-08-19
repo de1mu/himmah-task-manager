@@ -632,7 +632,6 @@ body {
   cursor: pointer;
 }
 
-
 @media (max-width: 768px) {
 
   .menu-toggle-btn {
@@ -641,12 +640,20 @@ body {
     justify-content: center;
   }
 
+  /* القائمة الجانبية المحسّنة للجوال */
   .sidebar {
     position: fixed;
     top: 0;
     right: -280px; 
     width: 260px;
     height: 100vh;
+    height: 100dvh; /* تتأقلم مع أشرطة متصفحات الجوال */
+    max-height: 100vh;
+    overflow-y: auto; /* يسمح بالسكرول إذا كانت العناصر طويلة */
+    padding: 1.5rem 1rem 2.5rem 1rem; /* مساحة سفليّة مريحة لزر الدخول/الخروج */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     z-index: 9999;
     box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
     transition: right 0.3s ease;
@@ -666,6 +673,22 @@ body {
     left: 0;
   }
 
+  /* ضغط المسافات بين عناصر القائمة لتناسب الشاشة */
+  .nav-menu {
+    gap: 4px;
+    margin-bottom: 1rem;
+  }
+
+  .nav-item {
+    padding: 10px 14px;
+  }
+
+  .icon-btn-full {
+    margin-top: auto;
+    padding: 12px;
+  }
+
+  /* البار العلوي في سطر واحد */
   .top-nav {
     display: flex;
     flex-direction: row;
@@ -707,6 +730,7 @@ body {
     height: 26px;
   }
 
+  /* توزيع محتوى الصفحة */
   .dashboard-grid, 
   .dump-board-grid {
     grid-template-columns: 1fr;
@@ -728,5 +752,4 @@ body {
 
   .banner-illustration img {
     width: 110px;
-  }
-}
+  }}
